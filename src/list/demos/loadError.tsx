@@ -2,6 +2,7 @@ import { Avatar, Divider, List, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import LoadingOutlined from '@sensoro-design/icons/LoadingOutlined';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { TagList } from '@lins-material/tag-list';
 import { data as dataProp, data2 } from './data';
 import './index.less';
 enum LoadStatus { 
@@ -45,7 +46,17 @@ const LoadErr = () => {
         </div>
         <div className='title'>
           <span>人物标签</span>
-          <span className='desc'>{item.nat}</span>
+          <div className='desc'>
+            <TagList
+              max={3}
+              list={[
+                { text: 'tag1' },
+                { text: 'tag2' },
+                { text: 'tag3' },
+                { text: 'tag4' },
+              ]}
+            />
+          </div>
         </div>
       </div>
     );
