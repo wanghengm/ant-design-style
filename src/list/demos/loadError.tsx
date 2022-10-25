@@ -1,27 +1,45 @@
-import { Avatar, Divider, List, Skeleton } from 'antd';
+import { Avatar, Divider, List, Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import LoadingOutlined from '@sensoro-design/icons/LoadingOutlined';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { data as dataProp, data2 } from './data';
 import './index.less';
-
-const App = () => {
+enum LoadStatus { 
+  LOADING = 'loading',
+  LOAD_ERROR = 'loadErr',
+}
+const LoadErr = () => {
   const [loading, setLoading] = useState(false);
+  const [loadStatus, setLoadStatus] = useState<LoadStatus>(LoadStatus.LOADING);
   const [data, setData] = useState<Array<any>>([...dataProp]);
 
-  const loadMoreData = () => {
+  const loadMoreData2 = () => { // 模拟请求
     if (loading) {
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setData([...data, ...data2])
-     }, 2000)
+    new Promise(() => {
+      setLoading(true);
+      throw new Error('抛出错误')
+    }).then(() => { 
+      setLoading(false);
+    }).catch((err) => { 
+      console.log(err);
+      setLoading(false);
+      setTimeout(() => {
+        setLoadStatus(LoadStatus.LOAD_ERROR);
+      }, 2000)
+    })
   };
+
+  const onClick = () => { 
+    loadMoreData2();
+    setLoadStatus(LoadStatus.LOADING);
+  }
+
   const renderDesc = (item: any) => { 
     return (
       <div className='ant-list-item-meta-description-subheading'>
-        <div className='title'>
+       <div className='title'>
           <span>最近出现</span>
           <span className='desc'>{item.email}</span>
         </div>
@@ -33,12 +51,26 @@ const App = () => {
     );
   }
 
+  const renderLoader = () => { 
+    return (
+      <div className='loading-content' style={{ textAlign: 'center', padding: '24px' }}>
+        {loadStatus === LoadStatus.LOAD_ERROR
+          ? <div className='load-error'>加载失败，<Button onClick={onClick} type="link" block>重新加载</Button></div> : <>
+            <span className='loading-content-icon'>
+              <LoadingOutlined></LoadingOutlined>
+            </span>
+            <span className='loading-content-text'>加载中···</span>
+          </>
+        }
+      </div>
+    )
+  }
   useEffect(() => {
     // loadMoreData();
   }, []);
   return (
     <div
-      id="scrollableDiv"
+      id="scrollableDiv2"
       style={{
         height: 400,
         overflow: 'auto',
@@ -48,23 +80,11 @@ const App = () => {
     >
       <InfiniteScroll
         dataLength={data.length}
-        next={loadMoreData}
+        next={loadMoreData2}
         hasMore={data.length < 50}
-        loader={
-          <div className='loading-content'>
-            <span className='loading-content-icon'><LoadingOutlined></LoadingOutlined></span>
-            <span className='loading-content-text'>加载中···</span>
-          </div>
-          // <Skeleton
-          //   avatar
-          //   paragraph={{
-          //     rows: 1,
-          //   }}
-          //   active
-          // />
-        }
-        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-        scrollableTarget="scrollableDiv"
+        loader={renderLoader()}
+        endMessage={<Divider plain>没有更多了</Divider>}
+        scrollableTarget="scrollableDiv2"
       >
         <List
           dataSource={data}
@@ -84,4 +104,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default LoadErr;

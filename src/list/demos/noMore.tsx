@@ -5,18 +5,19 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { data as dataProp, data2 } from './data';
 import './index.less';
 
-const App = () => {
+const NoMore = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Array<any>>([...dataProp]);
 
-  const loadMoreData = () => {
+  const loadMoreData2 = () => {
     if (loading) {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setData([...data, ...data2])
-     }, 2000)
+    new Promise(() => { throw new Error('抛出错误')}).then(() => { 
+    }).catch((err) => { 
+
+    })
   };
   const renderDesc = (item: any) => { 
     return (
@@ -38,7 +39,7 @@ const App = () => {
   }, []);
   return (
     <div
-      id="scrollableDiv"
+      id="scrollableDiv2"
       style={{
         height: 400,
         overflow: 'auto',
@@ -48,23 +49,16 @@ const App = () => {
     >
       <InfiniteScroll
         dataLength={data.length}
-        next={loadMoreData}
-        hasMore={data.length < 50}
+        next={loadMoreData2}
+        hasMore={data.length < 10}
         loader={
-          <div className='loading-content'>
+          <div className='loading-content'  style={{ textAlign: 'center', padding: '24px' }}>
             <span className='loading-content-icon'><LoadingOutlined></LoadingOutlined></span>
             <span className='loading-content-text'>加载中···</span>
           </div>
-          // <Skeleton
-          //   avatar
-          //   paragraph={{
-          //     rows: 1,
-          //   }}
-          //   active
-          // />
         }
-        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-        scrollableTarget="scrollableDiv"
+        endMessage={<Divider plain>没有更多了</Divider>}
+        scrollableTarget="scrollableDiv2"
       >
         <List
           dataSource={data}
@@ -84,4 +78,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default NoMore;
